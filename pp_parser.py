@@ -21,6 +21,8 @@ def parse_pp():
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option('useAutomationExtension', False)
     chrome_options.add_experimental_option("detach", True)
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('window-size=1366x768')
 
     browser = webdriver.Chrome(options=chrome_options)
 
@@ -38,6 +40,8 @@ def parse_pp():
     name='info@itkitchen.su'
     passw='123123'
 
+    needeedpages = int(input('Введите количество страниц: '))
+
     try:
         time.sleep(2)
         browser.find_element(By.ID, "login-from_email").click()
@@ -49,10 +53,10 @@ def parse_pp():
         browser.find_element(By.ID, "login-from_password").send_keys(passw)
         time.sleep(1)
         browser.find_element(By.CLASS_NAME, "ant-btn").click()
-        time.sleep(5)
+        time.sleep(2)
         browser.find_element(By.XPATH, "//a[contains(@href,'/order')]").click()
-        time.sleep(5)
-
+        time.sleep(2)
+        
         pagen_find = browser.find_element(By.XPATH, "//ul[@class = 'ant-pagination ant-table-pagination ant-table-pagination-right']/li[8]/a")
         pagen = int(pagen_find.text)
 
@@ -96,9 +100,12 @@ def parse_pp():
         status=[]
         DoC=[]
 
-        current_page = 0
-#Словари для принта в эксель    
-        while(current_page != pagen):
+        current_page = 1
+
+        active_page = 0
+#Словари для принта в эксель
+        while(active_page != needeedpages):
+            time.sleep(3)
 
             #Поиск элемента
             links_cli = browser.find_elements(By.XPATH, path_link_cli)
@@ -110,12 +117,16 @@ def parse_pp():
             links_status = browser.find_elements(By.XPATH, path_status)
             links_DoC = browser.find_elements(By.XPATH, path_DoC)
 
-            next_button_for3pages = browser.find_element(By.XPATH, path_next_button_for3pages)
-            next_button_for4 = browser.find_element(By.XPATH, path_next_button_for4)
-            next_button_ok = browser.find_element(By.XPATH, path_next_button_ok)
+
+            if current_page < 4:
+                next_button_for3pages = browser.find_element(By.XPATH, path_next_button_for3pages)
+            elif current_page == 4:
+                next_button_for4 = browser.find_element(By.XPATH, path_next_button_for4)
+            else:
+                next_button_ok = browser.find_element(By.XPATH, path_next_button_ok)
+
             len_link_tabs = len(links_cli)
             #Поиск элемента
-            time.sleep(2)
 
             for name_cli in links_cli:
                 names_cli.append(name_cli.text)
@@ -127,13 +138,12 @@ def parse_pp():
             for cli_nme in range(0, len_link_tabs):
                 cli_full.insert(cli_names, names_cli[cli_nme])
                 cli_names +=1
-            cli_links = 1
 
+            cli_links = 1
             for i in range(0, len_link_tabs):
                 cli_full.insert(cli_links, urls_cli[i])
                 cli_links +=2
-            print(cli_full)
-
+               
             for url_bbs in names_bbs:
                 urls_bbs.append(url_bbs.text)
             urls_bbs.remove('')
@@ -146,6 +156,7 @@ def parse_pp():
             for nme_bbs in range(0, len_names_tabs):
                 bbs_full.insert(bbs_names, urls_bbs[nme_bbs])
                 bbs_names +=1
+            
             # for i in bbs_names:
             #     if urls_bbs[nme_bbs] != "Исполнитель не найден":
             #         bbs_full.insert(bbs_full.index(i)+1, links_urls_bbs)
@@ -166,6 +177,7 @@ def parse_pp():
 
             for link_DoC in links_DoC:
                 DoC.append(link_DoC.text)
+            print(f'Страница номер {current_page} проверена.')
             # for cli_i in links_cli:
             #     phone_link_switch = urls_cli[cli_i]
             #     print(phone_link_switch)
@@ -179,25 +191,27 @@ def parse_pp():
             #     time.sleep(2)
             #     print(cli_phone)
             # print(cli_phone)
-            if(current_page < 4):
+            if current_page < 4:
                 next_button_for3pages.click()
-            elif(current_page == 4):
+            elif current_page == 4:
                 next_button_for4.click()
             else:
                 next_button_ok.click()
-            current_page =+ 1
-            time.sleep(2)
+            current_page += 1
+            active_page += 1
+            
 
-
-        print(cost)
     except Exception as e:
         print(e)
         pp_array = ['Ошибка']
 
-    time.sleep(2)
+    cli_full_final = []
 
-    for cli_full, urls_bbs, cost, ToC, address, status, DoC in zip(cli_full, urls_bbs, cost, ToC, address, status, DoC):
-        flatten = cli_full, urls_bbs, cost, ToC, address, status, DoC
+    for i in range(0,len(cli_full), 2):
+        cli_full_final.append(str(cli_full[i] + ' ' + str(cli_full[i+1])))
+
+    for cli_full_final, urls_bbs, cost, ToC, address, status, DoC in zip(cli_full_final, urls_bbs, cost, ToC, address, status, DoC):
+        flatten = cli_full_final, urls_bbs, cost, ToC, address, status, DoC
         file = open('res.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=',')
         writer.writerow(flatten)
@@ -205,8 +219,5 @@ def parse_pp():
     print('Файл res.csv создан')
 
     browser.quit()
-
-    #print(pp_array)
-    #return pp_array
 
 pp_result = parse_pp()
