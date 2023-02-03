@@ -11,7 +11,7 @@ import time
 import csv
 
 with open('res.csv', 'w', encoding='utf-8-sig', newline='') as file:
-    writer = csv.writer(file, delimiter=',')
+    writer = csv.writer(file, delimiter=';')
     writer.writerow([
         'Клиент', 'Няня', 'Цена', 'Время', 'Адрес', 'Статус', 'Дата создание'])
 
@@ -213,7 +213,7 @@ def parse_pp():
     for cli_full_final, urls_bbs, cost, ToC, address, status, DoC in zip(cli_full_final, urls_bbs, cost, ToC, address, status, DoC):
         flatten = cli_full_final, urls_bbs, cost, ToC, address, status, DoC
         file = open('res.csv', 'a', encoding='utf-8-sig', newline='')
-        writer = csv.writer(file, delimiter=',')
+        writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
     file.close()
     print('Файл res.csv создан')
