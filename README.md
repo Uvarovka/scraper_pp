@@ -8,3 +8,4 @@
  2) pip install -r req.txt
 
  3) python pp_parser.py
+ либо запустите pp_parser.py в папке
