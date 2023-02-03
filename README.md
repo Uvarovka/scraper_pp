@@ -3,8 +3,8 @@
 
 Введите:
 
-  cd Папка в которой вы поставили файлы
+ 1) cd Папка в которой вы поставили файлы
 
-  pip install -r req.txt
+ 2) pip install -r req.txt
 
-  python pp_parser
+ 3) python pp_parser
