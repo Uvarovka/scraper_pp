@@ -7,4 +7,4 @@
 
  2) pip install -r req.txt
 
- 3) python pp_parser
+ 3) python pp_parser.py
