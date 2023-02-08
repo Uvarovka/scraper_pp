@@ -38,7 +38,6 @@ def parse_pp():
 
     name=input("Введите почту: ")
     passw=input("Введите пароль: ")
-
     needeedpages = int(input('Введите количество страниц: '))
 
     try:
@@ -90,6 +89,7 @@ def parse_pp():
         current_page = 1
 
         active_page = 0
+        phoneelem = 0
 #Словари для принта в эксель
         while(active_page != needeedpages):
 
@@ -150,8 +150,9 @@ def parse_pp():
             for link_DoC in links_DoC:
                 DoC.append(link_DoC.text)
 
+
             for i in range(len(links_cli)):
-                phone_link_switch = urls_cli[i]
+                phone_link_switch = urls_cli[phoneelem]
                 browser.execute_script("window.open('');")
                 browser.switch_to.window(browser.window_handles[1])                
                 browser.get(phone_link_switch)
@@ -159,6 +160,7 @@ def parse_pp():
                 cli_phone.append(phone.text)
                 browser.close()
                 browser.switch_to.window(browser.window_handles[-1])
+                phoneelem += 1
 
             if current_page < 4:
                 next_button_for3pages.click()
