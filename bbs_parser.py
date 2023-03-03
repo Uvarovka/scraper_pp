@@ -20,7 +20,7 @@ def parse_pp():
     chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
     chrome_options.add_experimental_option('useAutomationExtension', False)
     chrome_options.add_experimental_option("detach", True)
-    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--headless')
     chrome_options.add_argument('window-size=1366x768')
 
     browser = webdriver.Chrome(options=chrome_options)
@@ -75,8 +75,8 @@ def parse_pp():
 
             #Поиск элемента
 
-            for name_bbs in names_bbs:
-                bbs_name.append(name_bbs.text)
+            # for name_bbs in names_bbs:
+            #     bbs_name.append(name_bbs.text)
 
             for url_bbs in names_bbs:
                 urls_bbs.append(url_bbs.get_attribute('href'))
@@ -89,11 +89,8 @@ def parse_pp():
                 browser.execute_script("window.open('');")
                 browser.switch_to.window(browser.window_handles[1])                
                 browser.get(phone_link_switch)
-                #img = browser.find_element(By.XPATH, "//div/img[@class ='ant-image-img sc-gsnTZi gPBxTq avatar']")
-                # if(browser.find_element(By.XPATH, "//img[src='/images/no-image.png']")):
-                #     photo_bbs.append(has_photo)
-                # else:
-                #     photo_bbs.append(hasnot_photo)
+                full_names_bbs = browser.find_element(By.XPATH, "//tbody/tr[4]/td/span")
+                bbs_name.append(full_names_bbs.text)
                 if browser.find_elements(By.XPATH, "//img[@src='/images/no-image.png']"):
                     photo_bbs.append(hasnot_photo)
                 else:
