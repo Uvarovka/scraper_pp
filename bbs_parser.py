@@ -12,7 +12,7 @@ import csv
 with open('res.csv', 'w', encoding='utf-8-sig', newline='') as file:
     writer = csv.writer(file, delimiter=';')
     writer.writerow([
-        'Няня', 'Номер няни', 'Фото профиля'])
+        'Няня', 'Номер няни', 'Фото профиля', 'Возраст', 'Обо мне', 'Мои преимущества', 'Кол-во выполненных заказов', ])
 
 def parse_pp():
     chrome_options = Options()
@@ -57,10 +57,16 @@ def parse_pp():
 
         has_photo = "Есть фото профиля"
         hasnot_photo = "Нет фото профиля"
+        old_date_splitter = '/'
+        new_date_splitter = ' из '
 #Словари для принта в эксель
         bbs_name = []
         urls_bbs = []
         bbs_phone= []
+        ages= []
+        abouts= []
+        advantages= []
+        bbs_orders= []
         photo_bbs = []
         current_page = 1
         active_page = 0
@@ -90,7 +96,17 @@ def parse_pp():
                 browser.switch_to.window(browser.window_handles[1])                
                 browser.get(phone_link_switch)
                 full_names_bbs = browser.find_element(By.XPATH, "//tbody/tr[4]/td/span")
+                age = browser.find_element(By.XPATH, "//tbody/tr[8]/td/span")
+                about = browser.find_element(By.XPATH, "//tbody/tr[10]/td/span")
+                advantage = browser.find_element(By.XPATH, "//tbody/tr[12]/td/span")
+                orders = browser.find_element(By.XPATH, "//tbody/tr[14]/td/span")
+
                 bbs_name.append(full_names_bbs.text)
+                ages.append(age.text)
+                abouts.append(about.text)
+                advantages.append(advantage.text)
+                fix_orders = orders.text.replace(old_date_splitter, new_date_splitter)
+                bbs_orders.append(fix_orders)
                 if browser.find_elements(By.XPATH, "//img[@src='/images/no-image.png']"):
                     photo_bbs.append(hasnot_photo)
                 else:
@@ -108,8 +124,8 @@ def parse_pp():
         print(e)
         
 
-    for bbs_name, bbs_phone, photo_bbs, in zip(bbs_name, bbs_phone, photo_bbs):
-        flatten = bbs_name, bbs_phone, photo_bbs
+    for bbs_name, bbs_phone, photo_bbs, ages, abouts, advantages, bbs_orders in zip(bbs_name, bbs_phone, photo_bbs, ages, abouts, advantages, bbs_orders):
+        flatten = bbs_name, bbs_phone, photo_bbs, ages, abouts, advantages, bbs_orders
         file = open('res.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
