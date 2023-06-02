@@ -9,3 +9,5 @@
 
  3) python pp_parser.py
  либо запустите pp_parser.py в папке
+
+  Для проверки номеров нужно запустить number_checker

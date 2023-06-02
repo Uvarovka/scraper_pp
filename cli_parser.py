@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium_stealth import stealth
 import csv
 
-with open('res.csv', 'w', encoding='utf-8-sig', newline='') as file:
+with open('res_clicsv', 'w', encoding='utf-8-sig', newline='') as file:
     writer = csv.writer(file, delimiter=';')
     writer.writerow([
         'Имя', 'Номер клиента', 'Рейтинг', 'Заказы', 'Дата создания' ])
@@ -49,11 +49,6 @@ def parse_pp():
         browser.find_element(By.XPATH, "//a[contains(@href,'/client')]").click()
 
         #Ссылка на элемент
-        path_names_cli = str("//*[@class= 'ant-table-tbody']/tr/td[1]/a")
-        path_phones_cli = str("//*[@class= 'ant-table-tbody']/tr/td[2]/a")
-        path_rating_cli = str("//*[@class= 'ant-table-tbody']/tr/td[3]")
-        path_orders_cli = str("//*[@class= 'ant-table-tbody']/tr/td[4]")
-        path_DOC_cli = str("//*[@class= 'ant-table-tbody']/tr/td[5]")
 
         #Ссылка на элемент
 
@@ -63,8 +58,18 @@ def parse_pp():
         cli_ratings= []
         cli_orders= []
         cli_DOCs= []
+
+        active_page=0
+        current_page = 1
 #Словари для принта в эксель
         while(active_page != needeedpages):
+
+            path_names_cli = str("//*[@class= 'ant-table-tbody']/tr/td[1]/a")
+            path_phones_cli = str("//*[@class= 'ant-table-tbody']/tr/td[2]/a")
+            path_rating_cli = str("//*[@class= 'ant-table-tbody']/tr/td[3]")
+            path_orders_cli = str("//*[@class= 'ant-table-tbody']/tr/td[4]")
+            path_DOC_cli = str("//*[@class= 'ant-table-tbody']/tr/td[5]")
+
             #Поиск элемента
             links_names_cli = browser.find_elements(By.XPATH, path_names_cli)
             links_phones_cli = browser.find_elements(By.XPATH, path_phones_cli)
@@ -84,8 +89,7 @@ def parse_pp():
 
             for cli_rating in links_rating_cli:
                 cli_ratings.append(cli_rating.text)
-            cli_rating.remove('')
-            
+            cli_ratings.remove('')
             for cli_order in links_orders_bbs:
                 cli_orders.append(cli_order.text)
             cli_orders.remove('')
@@ -97,19 +101,19 @@ def parse_pp():
             print(f'Страница номер {current_page} проверена.')
             current_page += 1
             active_page += 1
-            browser.get(f'https://podprismotrom-ykt.ru/baby-sitter?page={str(current_page)}')
-                        
+            browser.get(f'https://podprismotrom-ykt.ru/client?page={str(current_page)}')
+
     except Exception as e:
         print(e)
-        
 
-    for cli_names, cli_phones, cli_ratings, cli_orders, cli_DOC in zip(cli_names, cli_phones, cli_ratings, cli_orders, cli_DOC):
-        flatten = cli_names, cli_phones, cli_ratings, cli_orders, cli_DOC
-        file = open('res.csv', 'a', encoding='utf-8-sig', newline='')
+
+    for cli_names, cli_phones, cli_ratings, cli_orders, cli_DOCs in zip(cli_names, cli_phones, cli_ratings, cli_orders, cli_DOCs):
+        flatten = cli_names, cli_phones, cli_ratings, cli_orders, cli_DOCs
+        file = open('res_cli.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
-    file.close()
-    print('Файл res.csv создан')
+        file.close()
+    print('Файл res_cli.csv создан')
 
     browser.quit()
 

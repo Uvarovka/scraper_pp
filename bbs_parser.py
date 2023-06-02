@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium_stealth import stealth
 import csv
 
-with open('res.csv', 'w', encoding='utf-8-sig', newline='') as file:
+with open('res_bbs.csv', 'w', encoding='utf-8-sig', newline='') as file:
     writer = csv.writer(file, delimiter=';')
     writer.writerow([
         'Няня', 'Номер няни', 'Фото профиля', 'Возраст', 'Обо мне', 'Мои преимущества', 'Кол-во выполненных заказов', ])
@@ -93,7 +93,7 @@ def parse_pp():
             for i in range(len(names_bbs)):
                 phone_link_switch = urls_bbs[phoneelem]
                 browser.execute_script("window.open('');")
-                browser.switch_to.window(browser.window_handles[1])                
+                browser.switch_to.window(browser.window_handles[1])
                 browser.get(phone_link_switch)
                 full_names_bbs = browser.find_element(By.XPATH, "//tbody/tr[6]/td/span")
                 age = browser.find_element(By.XPATH, "//tbody/tr[10]/td/span")
@@ -119,18 +119,18 @@ def parse_pp():
             current_page += 1
             active_page += 1
             browser.get(f'https://podprismotrom-ykt.ru/baby-sitter?page={str(current_page)}')
-                        
+
     except Exception as e:
         print(e)
-        
+
 
     for bbs_name, bbs_phone, photo_bbs, ages, abouts, advantages, bbs_orders in zip(bbs_name, bbs_phone, photo_bbs, ages, abouts, advantages, bbs_orders):
         flatten = bbs_name, bbs_phone, photo_bbs, ages, abouts, advantages, bbs_orders
-        file = open('res.csv', 'a', encoding='utf-8-sig', newline='')
+        file = open('res_bbs.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
     file.close()
-    print('Файл res.csv создан')
+    print('Файл res_bbs.csv создан')
 
     browser.quit()
 

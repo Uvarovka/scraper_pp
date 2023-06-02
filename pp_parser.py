@@ -9,7 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium_stealth import stealth
 import csv
 
-with open('res.csv', 'w', encoding='utf-8-sig', newline='') as file:
+with open('res_pp.csv', 'w', encoding='utf-8-sig', newline='') as file:
     writer = csv.writer(file, delimiter=';')
     writer.writerow([
         'Клиент', 'Номер Клиента', 'Няня', 'Цена', 'Время', 'Адрес', 'Статус', 'Дата создание'])
@@ -47,7 +47,7 @@ def parse_pp():
         browser.find_element(By.ID, "login-from_password").send_keys(passw)
         browser.find_element(By.CLASS_NAME, "ant-btn").click()
         browser.find_element(By.XPATH, "//a[contains(@href,'/order')]").click()
-        
+
         pagen_find = browser.find_element(By.XPATH, "//ul[@class = 'ant-pagination ant-table-pagination ant-table-pagination-right']/li[8]/a")
         pagen = int(pagen_find.text)
 
@@ -133,7 +133,7 @@ def parse_pp():
             for nme_bbs in range(0, len_names_tabs):
                 bbs_full.insert(bbs_names, urls_bbs[nme_bbs])
                 bbs_names +=1
-            
+
             for link_cost in links_cost:
                 cost.append(link_cost.text)
 
@@ -154,7 +154,7 @@ def parse_pp():
             for i in range(len(links_cli)):
                 phone_link_switch = urls_cli[phoneelem]
                 browser.execute_script("window.open('');")
-                browser.switch_to.window(browser.window_handles[1])                
+                browser.switch_to.window(browser.window_handles[1])
                 browser.get(phone_link_switch)
                 phone = browser.find_element(By.XPATH, "//tbody/tr/td[1]/span[1]/a")
                 cli_phone.append(phone.text)
@@ -173,15 +173,15 @@ def parse_pp():
             active_page += 1
     except Exception as e:
         print(e)
-        
+
 
     for names_cli, cli_phone, urls_bbs, cost, ToC, address, status, DoC in zip(names_cli, cli_phone, urls_bbs, cost, ToC, address, status, DoC):
         flatten = names_cli, cli_phone, urls_bbs, cost, ToC, address, status, DoC
-        file = open('res.csv', 'a', encoding='utf-8-sig', newline='')
+        file = open('res_pp.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
     file.close()
-    print('Файл res.csv создан')
+    print('Файл res_pp.csv создан')
 
     browser.quit()
 
