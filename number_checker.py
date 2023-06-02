@@ -32,8 +32,8 @@ def parse_numbers(numbers):
     chrome_options.add_argument('window-size=1366x768')
     chrome_options.add_argument('start-maximized')
     #
-    # browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-    browser = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install(), options=chrome_options)
+    browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+    #browser = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install(), options=chrome_options)
     browser.implicitly_wait(5)
     stealth(browser,
             languages=["en-US", "en"],
