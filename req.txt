@@ -2,4 +2,4 @@ pandas
 selenium
 webdriver-manager
 selenium_stealth 
-wlsxwriter
+xlsxwriter
