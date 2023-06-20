@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromiumService
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
+from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
@@ -12,7 +13,7 @@ import csv
 with open('res_pp.csv', 'w', encoding='utf-8-sig', newline='') as file:
     writer = csv.writer(file, delimiter=';')
     writer.writerow([
-        'Клиент', 'Номер Клиента', 'Няня', 'Цена', 'Время', 'Адрес', 'Статус', 'Дата создание'])
+        'Клиент', 'Номер Клиента', 'Няня', 'Цена', 'Время', 'Город' ,'Адрес', 'Статус', 'Дата создание'])
 
 def parse_pp():
     chrome_options = Options()
@@ -23,7 +24,7 @@ def parse_pp():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('window-size=1366x768')
 
-    browser = webdriver.Chrome(options=chrome_options)
+    browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
     browser.implicitly_wait(5)
     stealth(browser,
             languages=["en-US", "en"],
@@ -48,9 +49,6 @@ def parse_pp():
         browser.find_element(By.CLASS_NAME, "ant-btn").click()
         browser.find_element(By.XPATH, "//a[contains(@href,'/order')]").click()
 
-        pagen_find = browser.find_element(By.XPATH, "//ul[@class = 'ant-pagination ant-table-pagination ant-table-pagination-right']/li[8]/a")
-        pagen = int(pagen_find.text)
-
         #Ссылка на элемент
         path_link_cli = str("//*[@class= 'ant-table-tbody']/tr/td[1]/a")
 
@@ -61,15 +59,14 @@ def parse_pp():
 
         path_ToC = str("//*[@class= 'ant-table-tbody']/tr/td[4]/span")
 
-        path_street = str("//*[@class= 'ant-table-tbody']/tr/td[5]")
+        path_city = str("//*[@class= 'ant-table-tbody']/tr/td[5]")
 
-        path_status = str("//*[@class= 'ant-table-tbody']/tr/td[6]/span")
+        path_street = str("//*[@class= 'ant-table-tbody']/tr/td[6]")
 
-        path_DoC = str("//*[@class= 'ant-table-tbody']/tr/td[7]/span")
+        path_status = str("//*[@class= 'ant-table-tbody']/tr/td[7]/span")
 
-        path_next_button_for3pages = str("//li[9]/button/span[1]")
-        path_next_button_for4 = str("//li[10]/button/span[1]")
-        path_next_button_ok = str("//li[11]/button/span[1]")
+        path_DoC = str("//*[@class= 'ant-table-tbody']/tr/td[8]/span")
+
         #Ссылка на элемент
 
 #Словари для принта в эксель
@@ -82,6 +79,7 @@ def parse_pp():
         links_urls_bbs =[]
         cost =[]
         ToC =[]
+        cities = []
         address=[]
         status=[]
         DoC=[]
@@ -101,16 +99,9 @@ def parse_pp():
             links_cost = browser.find_elements(By.XPATH, path_cost)
             links_ToC = browser.find_elements(By.XPATH, path_ToC)
             links_street = browser.find_elements(By.XPATH, path_street)
+            links_city = browser.find_elements(By.XPATH, path_city)
             links_status = browser.find_elements(By.XPATH, path_status)
             links_DoC = browser.find_elements(By.XPATH, path_DoC)
-
-
-            if current_page < 4:
-                next_button_for3pages = browser.find_element(By.XPATH, path_next_button_for3pages)
-            elif current_page == 4:
-                next_button_for4 = browser.find_element(By.XPATH, path_next_button_for4)
-            else:
-                next_button_ok = browser.find_element(By.XPATH, path_next_button_ok)
 
             len_link_tabs = len(links_cli)
             #Поиск элемента
@@ -140,6 +131,10 @@ def parse_pp():
             for link_ToC in links_ToC:
                 ToC.append(link_ToC.text)
 
+            for link_city in links_city:
+                cities.append(link_city.text)
+            cities.remove('')
+
             for link_address in links_street:
                 address.append(link_address.text)
             address.remove('')
@@ -162,25 +157,21 @@ def parse_pp():
                 browser.switch_to.window(browser.window_handles[-1])
                 phoneelem += 1
 
-            if current_page < 4:
-                next_button_for3pages.click()
-            elif current_page == 4:
-                next_button_for4.click()
-            else:
-                next_button_ok.click()
+            
             print(f'Страница номер {current_page} проверена.')
             current_page += 1
             active_page += 1
+            browser.get(f'https://podprismotrom-ykt.ru/client?page={str(current_page)}')
     except Exception as e:
         print(e)
 
 
-    for names_cli, cli_phone, urls_bbs, cost, ToC, address, status, DoC in zip(names_cli, cli_phone, urls_bbs, cost, ToC, address, status, DoC):
-        flatten = names_cli, cli_phone, urls_bbs, cost, ToC, address, status, DoC
+    for names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC in zip(names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC):
+        flatten = names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC
         file = open('res_pp.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
-    file.close()
+        file.close()
     print('Файл res_pp.csv создан')
 
     browser.quit()
