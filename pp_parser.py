@@ -161,7 +161,7 @@ def parse_pp():
             print(f'Страница номер {current_page} проверена.')
             current_page += 1
             active_page += 1
-            browser.get(f'https://podprismotrom-ykt.ru/client?page={str(current_page)}')
+            browser.get(f'https://podprismotrom-ykt.ru/order?page={str(current_page)}')
     except Exception as e:
         print(e)
 
