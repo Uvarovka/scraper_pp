@@ -1,5 +1,4 @@
 from selenium import webdriver
-from selenium.webdriver.chrome.service import Service as ChromiumService
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.core.utils import ChromeType
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -24,7 +23,8 @@ def parse_pp():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('window-size=1366x768')
 
-    browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+    #browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+    browser = webdriver.Chrome(options=chrome_options)
     browser.implicitly_wait(5)
     stealth(browser,
             languages=["en-US", "en"],
@@ -87,7 +87,7 @@ def parse_pp():
 
             for cli_name in links_names_cli:
                 cli_names.append(cli_name.text)
-            
+
             for cli_name in links_names_cli:
                 cli_urls.append(cli_name.get_attribute('href'))
 
@@ -107,11 +107,9 @@ def parse_pp():
 
             for i in range(len(links_names_cli)):
                 phone_link_switch = cli_urls[phoneelem]
-                print(phone_link_switch)
-                phone_link_switch = cli_urls[phoneelem]
                 browser.execute_script("window.open('');")
                 browser.switch_to.window(browser.window_handles[1])
-                browser.get(phone_link_switch)   
+                browser.get(phone_link_switch)
                 if browser.find_elements(By.XPATH, "//tbody/tr[10]/td/span"):
                     city = browser.find_element(By.XPATH, "//tbody/tr[10]/td/span")
                     cli_city.append(city.text)
