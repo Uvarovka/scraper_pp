@@ -23,8 +23,7 @@ def parse_pp():
     chrome_options.add_argument('--headless')
     chrome_options.add_argument('window-size=1366x768')
 
-    #browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
-    browser = webdriver.Chrome(options=chrome_options)
+    browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
     browser.implicitly_wait(5)
     stealth(browser,
             languages=["en-US", "en"],
