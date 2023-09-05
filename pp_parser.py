@@ -12,7 +12,7 @@ import csv
 with open('res_pp.csv', 'w', encoding='utf-8-sig', newline='') as file:
     writer = csv.writer(file, delimiter=';')
     writer.writerow([
-        'Клиент', 'Номер Клиента', 'Няня', 'Цена', 'Время', 'Город' ,'Адрес', 'Статус', 'Дата создание'])
+        'Клиент', 'Номер Клиента', 'Няня', 'Цена', 'Время', 'Город' ,'Адрес', 'Статус', 'Дата создание', 'Офферы'])
 
 def parse_pp():
     chrome_options = Options()
@@ -66,6 +66,8 @@ def parse_pp():
 
         path_DoC = str("//*[@class= 'ant-table-tbody']/tr/td[8]/span")
 
+        path_offers_urls = str("//*[@class= 'ant-table-tbody']/tr/td[10]/a")
+
         #Ссылка на элемент
 
 #Словари для принта в эксель
@@ -82,11 +84,14 @@ def parse_pp():
         address=[]
         status=[]
         DoC=[]
+        offers_urls = []
+        offers=[]
 
         current_page = 1
 
         active_page = 0
         phoneelem = 0
+        offerselem = 0
 #Словари для принта в эксель
         while(active_page != needeedpages):
 
@@ -101,6 +106,7 @@ def parse_pp():
             links_city = browser.find_elements(By.XPATH, path_city)
             links_status = browser.find_elements(By.XPATH, path_status)
             links_DoC = browser.find_elements(By.XPATH, path_DoC)
+            links_offers_urls = browser.find_elements(By.XPATH, path_offers_urls)
 
             len_link_tabs = len(links_cli)
             #Поиск элемента
@@ -144,6 +150,9 @@ def parse_pp():
             for link_DoC in links_DoC:
                 DoC.append(link_DoC.text)
 
+            for link_offers in links_offers_urls:
+                offers_urls.append(link_offers.get_attribute('href'))
+
 
             for i in range(len(links_cli)):
                 phone_link_switch = urls_cli[phoneelem]
@@ -156,7 +165,20 @@ def parse_pp():
                 browser.switch_to.window(browser.window_handles[-1])
                 phoneelem += 1
 
-            
+            for i in range(len(links_offers_urls)):
+                offers_link_switch = offers_urls[offerselem]
+                browser.execute_script("window.open('');")
+                browser.switch_to.window(browser.window_handles[1])
+                browser.get(offers_link_switch)
+                offer = browser.find_elements(By.XPATH, "//tbody/tr/td[1]/a")
+                if browser.find_elements(By.XPATH, "//tbody/tr/td[1]/a"):
+                    offers.append([offeri.text for offeri in offer])
+                else:
+                    offers.append('')
+                browser.close()
+                browser.switch_to.window(browser.window_handles[-1])
+                offerselem += 1
+
             print(f'Страница номер {current_page} проверена.')
             current_page += 1
             active_page += 1
@@ -165,8 +187,8 @@ def parse_pp():
         print(e)
 
 
-    for names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC in zip(names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC):
-        flatten = names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC
+    for names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, offers in zip(names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, offers):
+        flatten = names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, offers
         file = open('res_pp.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
