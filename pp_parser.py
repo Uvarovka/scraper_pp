@@ -12,7 +12,7 @@ import csv
 with open('res_pp.csv', 'w', encoding='utf-8-sig', newline='') as file:
     writer = csv.writer(file, delimiter=';')
     writer.writerow([
-        'Клиент', 'Номер Клиента', 'Няня', 'Цена', 'Время', 'Город' ,'Адрес', 'Статус', 'Дата создание', 'Офферы'])
+        'Клиент', 'Номер Клиента', 'Няня', 'Цена', 'Время', 'Город' ,'Адрес', 'Статус', 'Дата создание','Причина отмены', 'Офферы'])
 
 def parse_pp():
     chrome_options = Options()
@@ -24,6 +24,7 @@ def parse_pp():
     chrome_options.add_argument('window-size=1366x768')
 
     browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+    #browser = webdriver.chromium(service=ChromiumService(ChromeDriverManager().install()), options=chrome_options)
     browser.implicitly_wait(5)
     stealth(browser,
             languages=["en-US", "en"],
@@ -64,9 +65,11 @@ def parse_pp():
 
         path_status = str("//*[@class= 'ant-table-tbody']/tr/td[7]/span")
 
-        path_DoC = str("//*[@class= 'ant-table-tbody']/tr/td[8]/span")
+        path_DoC = str("//*[@class= 'ant-table-tbody']/tr/td[9]/span")
 
-        path_offers_urls = str("//*[@class= 'ant-table-tbody']/tr/td[10]/a")
+        path_offers_urls = str("//*[@class= 'ant-table-tbody']/tr/td[11]/a")
+
+        path_reasons_urls = str("//*[@class= 'ant-table-tbody']/tr/td[8]")
 
         #Ссылка на элемент
 
@@ -86,6 +89,7 @@ def parse_pp():
         DoC=[]
         offers_urls = []
         offers=[]
+        reasons=[]
 
         current_page = 1
 
@@ -107,6 +111,7 @@ def parse_pp():
             links_status = browser.find_elements(By.XPATH, path_status)
             links_DoC = browser.find_elements(By.XPATH, path_DoC)
             links_offers_urls = browser.find_elements(By.XPATH, path_offers_urls)
+            links_reasons = browser.find_elements(By.XPATH, path_reasons_urls)
 
             len_link_tabs = len(links_cli)
             #Поиск элемента
@@ -143,6 +148,10 @@ def parse_pp():
             for link_address in links_street:
                 address.append(link_address.text)
             address.remove('')
+
+            for link_reasons in links_reasons:
+                reasons.append(link_reasons.text)
+            reasons.remove('')
 
             for link_status in links_status:
                 status.append(link_status.text)
@@ -187,8 +196,8 @@ def parse_pp():
         print(e)
 
 
-    for names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, offers in zip(names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, offers):
-        flatten = names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, offers
+    for names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, reasons, offers in zip(names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, reasons, offers):
+        flatten = names_cli, cli_phone, urls_bbs, cost, ToC, cities, address, status, DoC, reasons, offers
         file = open('res_pp.csv', 'a', encoding='utf-8-sig', newline='')
         writer = csv.writer(file, delimiter=';')
         writer.writerow(flatten)
